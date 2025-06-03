@@ -1,4 +1,3 @@
-# SSTEAM
+# MENTAL2
 
-Spatial, Spectral, and Temporal Transformers for EEG Analysis in Multimodal Mental Disorder
-Classification
+Multimodal Spatial-Spectral-Temporal Transformer for Mental Disorder Classification
