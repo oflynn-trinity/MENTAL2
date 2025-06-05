@@ -2,30 +2,38 @@ import torch
 import torch.nn as nn
 
 # the TransformerEnsemble component consists of three transformer encoders
-# this component takes three input tensors, passes each into a separate encoder, and
-# returns a single concatenated result tensor
+# This component takes three input tensors, passes each into a separate encoder, and
+# returns a result summary of the three transformers
+
+# input shape expected is (batch_sz, input_sz, d_model), output shape will be (batch_sz, d_model * 3)
+N_HEADS = 8
+N_LAYERS = 4
 
 class TransformerEnsemble(nn.Module):
 
-    def __init__(self, d_model: int, d_ff: int, n_heads: int, n_layers: int, dropout: float):
+    def __init__(self, input_sz: int, d_model: int, d_ff: int, dropout: float):
         super().__init__()
 
+        self.input_sz = input_sz
         self.d_model = d_model
         self.d_ff = d_ff
-        self.n_heads = n_heads
-        self.n_layers = n_layers
         self.dropout = dropout
 
-        self.encoder_layer = nn.TransformerEncoderLayer(d_model, n_heads, d_ff, dropout)
+        self.encoder_layer = nn.TransformerEncoderLayer(d_model, N_HEADS, d_ff, dropout, batch_first = True)
 
-        self.spatial_transformer = nn.TransformerEncoder(self.encoder_layer, n_layers)
-        self.spectral_transformer = nn.TransformerEncoder(self.encoder_layer, n_layers)
-        self.temporal_transformer = nn.TransformerEncoder(self.encoder_layer, n_layers)
+        self.transformer1 = nn.TransformerEncoder(self.encoder_layer, N_LAYERS)
+        self.transformer2 = nn.TransformerEncoder(self.encoder_layer, N_LAYERS)
+        self.transformer3 = nn.TransformerEncoder(self.encoder_layer, N_LAYERS)
 
-    def forward(self, in_spatial, in_spectral, in_temporal):
-        out_spatial = self.spatial_transformer(in_spatial)
-        out_spectral = self.spectral_transformer(in_spectral)
-        out_temporal = self.temporal_transformer(in_temporal)
+        self.linear = nn.Linear(self.input_sz, 1)
 
-        return torch.cat((out_spatial,out_spectral,out_temporal), 2)   #concats along final dimension, assumes tensors are of shape (batch_size, channels/bands/windows, d_model)
-        
+    def forward(self, in1, in2, in3):
+        out1 = self.transformer1(in1)
+        out2 = self.transformer2(in2)
+        out3 = self.transformer3(in3)
+        #output shape is same as input shape, (batch_sz, input_sz, d_model)
+
+        combined = torch.cat((out1,out2,out3), 2) #concats along final dimension
+        collapsed = self.linear(combined.transpose(1,2)) #collapses input_sz dimension
+
+        return torch.squeeze(collapsed)
