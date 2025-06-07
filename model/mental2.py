@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
-from psd_embedding import AllPSDEmbedding
-from pos_encoder import AllPosEncoder
-from cross_attention import Fuser
-from transformers import TransformerEnsemble
-from classifier import Classifier
+from components.psd_embedding import AllPSDEmbedding
+from components.pos_encoder import AllPosEncoder
+from components.cross_attention import Fuser
+from components.transformers import TransformerEnsemble
+from components.classifier import Classifier
 
 #input shape of psd data is (batch_sz, n_segments, n_channels, n_bands)
 #input shape of NEO-FFI data is (batch_sz, 60)
