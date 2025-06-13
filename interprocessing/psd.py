@@ -52,10 +52,10 @@ exclude_these = ['artifacts', 'VEOG', 'HEOG', 'Erbs', 'OrbOcc', 'Mass']
 
 
 # path of preprocessed EEG data
-preprocess_file_path = 'TDBRAIN/preprocessed'
+preprocess_file_path = '/Users/owenflynn/research/MENTAL2/TD-BRAIN-sample/preprocessed'
 
 # path of directory where we will save the PSD features
-psds_path = 'TDBRAIN/PSD_all'
+psds_path = '/Users/owenflynn/research/MENTAL2/TD-BRAIN-sample/PSD_full'
 
 
 ##################################################################################################
@@ -130,10 +130,10 @@ def get_psd(file):
                 channel_psds.append(avg)
 
 
-                # add the PSD values for this channel to the interval data
+                # add the 5 PSD values for this channel to the interval data
                 interval_psd.append(channel_psds)
 
-        # add the PSD values for this interval to total data
+        # add the 26 PSD values for this interval to total data
         all_psds.append(interval_psd)
 
     # return a numpy array with the psd information
@@ -260,7 +260,7 @@ def extract_psds(path, out):
                         sec  = time.split(".")[0]
                         if(int(sec) >= 118):
                             # extract psd values using get_psd
-                            res = get_psd_all(pth)
+                            res = get_psd(pth)
                             # where to save the file
                             write_to = os.path.join(output, sn + ("_EO" if f.__contains__("EO") else "_EC"))
                             np.save(write_to, res, allow_pickle=True)

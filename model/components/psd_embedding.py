@@ -38,7 +38,7 @@ class PSDEmbedding(nn.Module):
         else:
             restructured = psd
 
-        shaped = restructured.reshape(psd.shape(0), self.dim_sz, self.intermediate_sz)
+        shaped = restructured.reshape(psd.size()[0], self.dim_sz, self.intermediate_sz)
         return self.linear(shaped)
 
 class AllPSDEmbedding(nn.Module):

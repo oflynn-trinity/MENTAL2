@@ -1,5 +1,6 @@
 import torch
 import torch.nn as nn
+import torch.nn.functional as F
 
 class VAE(nn.Module):
     def __init__(self, input_sz: int, compressed_sz: int, dropout: float, layer1_sz = 3000, layer2_sz = 1024):
@@ -37,10 +38,10 @@ class VAE(nn.Module):
     def forward(self, input):
         res = self.encoder(input)
 
-        mu = self.mu(res)
-        var = self.var(res)
-
+        mu = (self.mu(res))
+        var = F.sigmoid(self.var(res))
+        
         dist = torch.distributions.normal.Normal(mu, torch.exp(0.5*var))
         sample = dist.rsample()
 
-        return self.decoder(sample)
+        return self.decoder(sample), mu, var

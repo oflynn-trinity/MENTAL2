@@ -1,10 +1,11 @@
 import torch
 import torch.nn as nn
-from components.psd_embedding import AllPSDEmbedding
-from components.pos_encoder import AllPosEncoder
-from components.cross_attention import Fuser
-from components.transformers import TransformerEnsemble
-from components.classifier import Classifier
+
+from .components.psd_embedding import AllPSDEmbedding
+from .components.pos_encoder import AllPosEncoder
+from .components.cross_attention import Fuser
+from .components.transformers import TransformerEnsemble
+from .components.classifier import Classifier
 
 #input shape of psd data is (batch_sz, n_segments, n_channels, n_bands)
 #input shape of NEO-FFI data is (batch_sz, 60)
@@ -44,7 +45,7 @@ class MENTAL2(nn.Module):
         emTemporal, emSpatial, emSpectral = self.psdEmbed(psd) #shape (batch_sz, # of segments/channels/bands, d_model)
 
         #concatenate embeddings along feature dimension
-        neoDem = torch.cat((embeddedNeo, embeddedDem), 0) #shape (batch_sz, 63, d_model)
+        neoDem = torch.cat((embeddedNeo, embeddedDem), 1) #shape (batch_sz, 63, d_model)
 
         #add positional encodings before fusion
         posNeoDem, posTemporal, posSpatial, posSpectral = self.posEncoder(neoDem, emTemporal, emSpatial, emSpectral) #shape of posX same as emX

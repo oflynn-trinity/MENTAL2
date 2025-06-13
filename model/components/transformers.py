@@ -30,7 +30,6 @@ class TransformerEnsemble(nn.Module):
         out2 = self.transformer2(in2)
         out3 = self.transformer3(in3)
         #output shape is same as input shape, (batch_sz, input_sz, d_model)
-
         combined = torch.cat((out1,out2,out3), 2) #concats along final dimension
         collapsed = self.linear(combined.transpose(1,2)) #collapses input_sz dimension
 
